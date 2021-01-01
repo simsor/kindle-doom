@@ -1,0 +1,15 @@
+{
+    "items": [
+        {
+            "name": "Simon's Fun Land",
+            "items": [
+                {
+                    "name": "PrBoom",
+                    "action": "./run.sh",
+                    "refresh": false,
+                    "exitmenu": false
+                }
+            ]
+        }
+    ]
+  }
