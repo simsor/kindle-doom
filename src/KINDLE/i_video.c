@@ -133,6 +133,8 @@ static void init_kindle_keys() {
   }
 }
 
+#define KINDLE_READ_AGAIN 4
+
 static int kindle_poll_keys(kindle_key_t *k) {
     int retval = read(kindleKeysFd, k, sizeof(kindle_key_t));
     if (retval == -1) {
@@ -152,6 +154,10 @@ static int kindle_poll_keys(kindle_key_t *k) {
         perror("read()");
         exit(1);
       }
+    } else if (k->keyCode == KINDLE_READ_AGAIN) {
+      printf("Read again\n");
+      read(kindleKeysFd2, k, sizeof(kindle_key_t));
+      return 1;
     } else if (retval > 0)  {
       return 1;
     }
@@ -179,10 +185,11 @@ static boolean mouse_currently_grabbed;
 #define KINDLE_RIGHT 106
 #define KINDLE_UP 103
 #define KINDLE_DOWN 108
-#define KINDE_OK 194
+#define KINDLE_OK 194
 #define KINDLE_HOME 102
 #define KINDLE_MENU 139
 #define KINDLE_BACK 158
+#define KINDLE_KEYBOARD 29
 
 static int I_TranslateKey(unsigned short code)
 {
@@ -193,7 +200,10 @@ static int I_TranslateKey(unsigned short code)
     case KINDLE_RIGHT: rc = KEYD_UPARROW; break;
     case KINDLE_UP: rc = KEYD_LEFTARROW; break;
     case KINDLE_DOWN: rc = KEYD_RIGHTARROW; break;
-    case KINDE_OK: rc = KEYD_RCTRL; break;
+    case KINDLE_OK: rc = KEYD_RCTRL; break;
+    case KINDLE_BACK: rc = KEYD_ESCAPE; break;
+    case KINDLE_MENU: rc = KEYD_ENTER; break;
+    case KINDLE_KEYBOARD: rc = KEYD_SPACEBAR; break;
     default: break;
   }
 

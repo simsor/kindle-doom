@@ -16,9 +16,10 @@ Prerequisites: copy your `doom.wad` and `prboom.wad` to the root of your Kindle 
 The controls are as follows:
 - Keypad to move
 - "OK" button to shoot
+- "Menu" to open doors / activate switches
+- "Back" to toggle the menu (mapped to Escape)
+- "Keyboard" to select an entry in the menu (mapped to Enter)
 - "Home" button to quit
-
-There's no "Use" key, because I haven't totally figured out how the other buttons work yet.
 
 ## Compilation
 
@@ -37,7 +38,7 @@ Based on [`prboom-2.5.0`](https://sourceforge.net/projects/prboom/files/prboom%2
 
 The main change is the addition of `src/KINDLE/`, which defines most Kindle-specific functions. I basically copied `src/SDL/` and modified everything to remove dependencies on SDL and instead work directly on the Kindle's framebuffer.
 
-Resolution is hardcoded to 600x800 and cannot be changed.
+Resolution is hardcoded to 800x600 widescreen and cannot be changed.
 
 I removed all the autoconf stuff and wrote a Makefile by hand.
 
