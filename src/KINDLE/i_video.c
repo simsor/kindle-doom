@@ -92,8 +92,8 @@ typedef struct {
 
 static kindle_key_t kkey;
 
-#define SCREEN_WIDTH 600
-#define SCREEN_HEIGHT 800
+#define KINDLE_WIDTH 800
+#define KINDLE_HEIGHT 600
 
 /////////// FRAMEBUFFER STUFF
 static void init_framebuffer() {
@@ -189,10 +189,10 @@ static int I_TranslateKey(unsigned short code)
   int rc = 0;
 
   switch (code) {
-    case KINDLE_LEFT: rc = KEYD_LEFTARROW; break;
-    case KINDLE_RIGHT: rc = KEYD_RIGHTARROW; break;
-    case KINDLE_UP: rc = KEYD_UPARROW; break;
-    case KINDLE_DOWN: rc = KEYD_DOWNARROW; break;
+    case KINDLE_LEFT: rc = KEYD_DOWNARROW; break;
+    case KINDLE_RIGHT: rc = KEYD_UPARROW; break;
+    case KINDLE_UP: rc = KEYD_LEFTARROW; break;
+    case KINDLE_DOWN: rc = KEYD_RIGHTARROW; break;
     case KINDE_OK: rc = KEYD_RCTRL; break;
     default: break;
   }
@@ -320,25 +320,11 @@ void I_FinishUpdate (void)
 {
   if (I_SkipFrame()) return;
 
-
-    int h;
-    byte *src;
-    byte *dest;
-
-  
-    dest=screen;
-    src=screens[0].data;
-    h=SCREEN_HEIGHT;
-    for (; h>0; h--)
-    {
-      memcpy(dest,src,SCREENWIDTH); //*V_GetPixelDepth()
-      for (byte* off=dest; off < dest+SCREENWIDTH; off++) {
-        *off = ~*off; // Invert pixel color, 0xFF == black on the e-ink display
-      }
-      dest+=SCREEN_WIDTH;
-      src+=screens[0].byte_pitch;
+  for (int x=0; x < SCREENWIDTH; x++) {
+    for (int y=0; y < SCREENHEIGHT; y++) {
+      screen[x*600+(599-y)] = ~screens[0].data[y*SCREENWIDTH+x];
     }
-
+  }
 
   update_framebuffer(0);
 }
@@ -377,8 +363,8 @@ void I_PreInitGraphics(void)
 // It should be used only for fullscreen modes.
 static void I_ClosestResolution (int *width, int *height, int flags)
 {
-  *width=600;
-  *height=800;
+  *width=KINDLE_WIDTH;
+  *height=KINDLE_HEIGHT;
 }  
 
 // CPhipps -
@@ -406,8 +392,8 @@ void I_CalculateRes(unsigned int width, unsigned int height)
     SCREENHEIGHT = height;
     SCREENPITCH = SCREENWIDTH;
   } else {
-    SCREENWIDTH = 600;//(width+15) & ~15;
-    SCREENHEIGHT = height;
+    SCREENWIDTH = KINDLE_WIDTH;
+    SCREENHEIGHT = KINDLE_HEIGHT;
     if (!(SCREENWIDTH % 1024)) {
       SCREENPITCH = SCREENWIDTH*V_GetPixelDepth()+32;
     } else {
@@ -512,11 +498,12 @@ void I_UpdateVideoMode(void)
 
   // Get the info needed to render to the display
 
+    byte* screen_data = (byte*)malloc(800*600);
     screens[0].not_on_heap = true;
-    screens[0].data = (unsigned char *) (screen);
-    screens[0].byte_pitch = SCREEN_WIDTH;
-    screens[0].short_pitch = SCREEN_WIDTH; // screen->pitch / V_GetModePixelDepth(VID_MODE16);
-    screens[0].int_pitch = SCREEN_WIDTH; // screen->pitch / V_GetModePixelDepth(VID_MODE32);
+    screens[0].data = (unsigned char *) (screen_data);
+    screens[0].byte_pitch = KINDLE_WIDTH;
+    screens[0].short_pitch = KINDLE_WIDTH; // screen->pitch / V_GetModePixelDepth(VID_MODE16);
+    screens[0].int_pitch = KINDLE_WIDTH; // screen->pitch / V_GetModePixelDepth(VID_MODE32);
 
 
   V_AllocScreens();
